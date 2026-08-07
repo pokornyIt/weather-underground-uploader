@@ -85,5 +85,14 @@
         ".venv",
         "*.code-workspace",
         "**/dist"
+    ],
+    "cSpell.words": [
+        "keepalive"
+    ],
+    "cSpell.ignoreWords": [
+        "capsys",
+        "inhg",
+        "mqtt",
+        "pytest"
     ]
 }

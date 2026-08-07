@@ -1,0 +1,57 @@
+# Credentials are read from MQTT_USERNAME, MQTT_PASSWORD, WU_STATION_ID, and WU_STATION_KEY.
+# Do not add credentials to this file.
+# Unknown and duplicate keys are rejected. Names of payload formats, units, and targets are case-sensitive.
+mqtt:
+  # host must be a non-empty string. port must be an integer from 1 through 65535.
+  host: mqtt.example.local
+  port: 1883
+  # Defaults to weather-underground-uploader.
+  client_id: weather-underground-uploader
+  # Durations are positive integers followed by s, m, or h.
+  keepalive: 60s
+  # TLS uses certificate verification and the operating system trust store.
+  tls: false
+
+upload:
+  interval: 60s
+  # Defaults to 10s.
+  timeout: 10s
+
+sources:
+  # At least one source is required, and only one source may use each target.
+  outdoor_temperature:
+    topic: zigbee2mqtt/outdoor
+    payload: json
+    # JSON extraction supports one top-level key only.
+    value: temperature
+    # Temperature supports celsius and fahrenheit.
+    unit: celsius
+    max_age: 180s
+    # Defaults to false. An accepted retained message is considered updated when received.
+    accept_retained: false
+    target: temperature
+
+  outdoor_humidity:
+    topic: zigbee2mqtt/outdoor
+    payload: json
+    value: humidity
+    # Humidity supports percent only.
+    unit: percent
+    max_age: 180s
+    accept_retained: false
+    target: humidity
+
+  pressure:
+    topic: sensors/pressure
+    payload: scalar
+    # Scalar sources must not define value.
+    # Pressure supports hpa, pa, and inhg.
+    unit: hpa
+    max_age: 300s
+    accept_retained: false
+    target: pressure
+
+outputs:
+  weather_underground:
+    # Defaults to true. WU_STATION_ID and WU_STATION_KEY are required when enabled.
+    enabled: true

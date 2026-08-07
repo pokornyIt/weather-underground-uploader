@@ -2,15 +2,16 @@
 name = "weather-underground-uploader"
 version = "0.1.0"
 description = "Upload normalized MQTT weather observations to Weather Underground PWS."
+readme = "README.md"
 keywords = ["iot", "mqtt", "pws", "weather-station", "weather-underground"]
 authors = [{ name = "pokornyIt" }]
 license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.14,<3.15"
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: No Input/Output (Daemon)",
   "Intended Audience :: System Administrators",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -18,7 +19,10 @@ classifiers = [
   "Topic :: Home Automation",
   "Topic :: Scientific/Engineering :: Atmospheric Science",
 ]
-dependencies = []
+dependencies = ["pydantic>=2.12,<3", "pyyaml>=6.0.3,<7"]
+
+[project.scripts]
+weather-underground-uploader = "wu_uploader.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/pokornyIt/weather-underground-uploader"
@@ -26,18 +30,35 @@ Issues = "https://github.com/pokornyIt/weather-underground-uploader/issues"
 Repository = "https://github.com/pokornyIt/weather-underground-uploader"
 
 [dependency-groups]
-dev = ["pre-commit>=4.6", "pyright>=1.1.390", "pytest>=9.0", "ruff>=0.16"]
+dev = [
+  "pre-commit>=4.6",
+  "pyright>=1.1.390",
+  "pytest>=9.0",
+  "ruff>=0.16",
+  "types-pyyaml>=6.0.12",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.17,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "wu_uploader"
 
 [tool.pyright]
 exclude = [".venv"]
 pythonVersion = "3.14"
 typeCheckingMode = "strict"
+include = ["src", "tests"]
 venv = ".venv"
 venvPath = "."
+reportMissingImports = true
+reportUnusedImport = true
 
 [tool.pytest.ini_options]
 addopts = ["--strict-config", "--strict-markers"]
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 120
@@ -45,13 +66,13 @@ target-version = "py314"
 
 [tool.ruff.format]
 docstring-code-format = true
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
 
 [tool.ruff.lint]
 ignore = ["D100", "D104", "D105", "D107"]
 select = ["ANN", "B", "D", "E4", "E7", "E9", "F", "I", "N", "RUF", "SIM", "UP"]
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["D"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"

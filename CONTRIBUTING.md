@@ -81,6 +81,12 @@ Run all configured pre-commit hooks:
 uv run pre-commit run --all-files
 ```
 
+Run the manual pytest hook when tests are affected:
+
+```bash
+uv run pre-commit run pytest --hook-stage manual --all-files
+```
+
 For container-related changes, also run:
 
 ```bash

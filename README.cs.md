@@ -7,8 +7,8 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Repozitář je aktuálně ve fázi inicializace projektu. Služba ještě není
-> implementovaná ani spustitelná.
+> Striktní načítání konfigurace a vstupní bod CLI jsou implementované. MQTT
+> příjem a odesílání do Weather Underground zatím implementované nejsou.
 
 ## Plánovaný tok dat
 
@@ -75,8 +75,7 @@ uv run pyright
 uv run pytest
 ```
 
-Testovací sada zůstane prázdná do implementace prvních komponent aplikace. V
-tomto stavu pytest skončí s kódem 5, protože nenačte žádné testy.
+Testovací sada pokrývá implementované chování konfigurace a CLI.
 
 Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 
@@ -84,18 +83,24 @@ Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 uv run pre-commit run --all-files
 ```
 
-## Plánovaná konfigurace
-
-Služba načte YAML konfigurační soubor předaný pomocí:
+Manuální pytest hook spusťte pomocí:
 
 ```bash
-weather-underground-uploader --config config.yaml
+uv run pre-commit run pytest --hook-stage manual --all-files
 ```
 
-MQTT témata, pole payloadu, jednotky, limity aktuálnosti a intervaly odesílání
-specifické pro instalaci budou uložené v tomto souboru. Finální ukázková
-konfigurace bude po implementaci jejího načítání dostupná jako
-`config.example.yaml`.
+## Konfigurace
+
+Zkopírujte `config.example.yaml`, upravte hodnoty specifické pro instalaci a
+výsledný soubor předejte CLI:
+
+```bash
+uv run weather-underground-uploader --config config.yaml
+```
+
+CLI před spuštěním striktně ověří celou konfiguraci. Neznámé klíče,
+nepodporované kombinace, duplicitní cíle a chybějící povinné hodnoty způsobí
+srozumitelnou chybu.
 
 Přihlašovací údaje se budou načítat pouze z proměnných prostředí:
 
@@ -114,8 +119,11 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 ```text
 .
 ├── .github/ISSUE_TEMPLATE/
+├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
+├── src/wu_uploader/
+├── tests/
 ├── .python-version
 ├── AGENTS.md
 ├── CONTRIBUTING.md
@@ -126,8 +134,8 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 └── uv.lock
 ```
 
-Zdrojový balíček, testy, ukázková konfigurace, Docker soubory a vstupní bod pro
-spuštění budou přidány během implementace.
+MQTT příjem, odesílání do Weather Underground, plánování a Docker nasazení budou
+přidány v rámci zbývajících implementačních issue.
 
 ## Licence
 

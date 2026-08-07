@@ -1,0 +1,1 @@
+"""Weather Underground uploader service."""

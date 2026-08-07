@@ -1,0 +1,32 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list --sort=alphanumeric
+
+  pre-commit:
+    desc: "Run pre-commit checks for staged files"
+    cmds:
+      - uv run -m pre_commit run
+
+  pre-commit:add:
+    desc: "Run pre-commit checks for staged files"
+    cmds:
+      - git add .
+      - uv run -m pre_commit run
+
+  pre-commit:all:
+    desc: "Run pre-commit checks for all files"
+    cmds:
+      - uv run -m pre_commit run --all-files
+
+  bootstrap:
+    desc: "Bootstrap the development environment"
+    cmds:
+      - uv sync
+
+  test:all:
+    desc: "Run pytest for all tests"
+    cmds:
+      - uv run -m pytest -v tests
