@@ -7,9 +7,9 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Striktní načítání konfigurace, stav normalizovaných měření a MQTT příjem s
-> automatickým opětovným připojením jsou implementované. Odesílání do Weather
-> Underground a integrace životního cyklu služby zatím implementované nejsou.
+> Striktní načítání konfigurace, stav normalizovaných měření, MQTT příjem a
+> odesílání do Weather Underground jsou implementované. Plánování a integrace
+> životního cyklu služby zatím implementované nejsou.
 
 ## Plánovaný tok dat
 
@@ -45,6 +45,10 @@ konkrétním výrobci senzorů.
 Autoritativní specifikace projektu a MVP je v souboru
 [docs/cs/PROJECT.md](docs/cs/PROJECT.md).
 
+Pro registraci stanice a získání Station ID a Station Key použijte
+[návod k nastavení Weather Underground PWS](docs/cs/weather-underground-pws-setup-guide.md). K dispozici je také
+lokální kopie oficiálního dokumentu [PWS Upload Protocol](docs/pws-upload-Protocol.pdf).
+
 Pokyny pro přispívání jsou v souboru
 [CONTRIBUTING.md](CONTRIBUTING.md).
 Pokyny pro automatizaci repozitáře jsou v souboru [AGENTS.md](AGENTS.md).
@@ -76,8 +80,8 @@ uv run pyright
 uv run pytest
 ```
 
-Testovací sada pokrývá konfiguraci, spuštění CLI, zpracování měření a MQTT příjem
-bez požadavku na živý broker.
+Testovací sada pokrývá konfiguraci, spuštění CLI, zpracování měření, MQTT příjem
+a odesílání do Weather Underground bez požadavku na živé služby.
 
 Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 
@@ -136,8 +140,8 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 └── uv.lock
 ```
 
-Odesílání do Weather Underground, integrace životního cyklu služby, plánování a
-Docker nasazení budou přidány v rámci zbývajících implementačních issue.
+Integrace životního cyklu služby, plánování a Docker nasazení budou přidány v
+rámci zbývajících implementačních issue.
 
 ## Licence
 
