@@ -30,3 +30,8 @@ tasks:
     desc: "Run pytest for all tests"
     cmds:
       - uv run -m pytest -v tests
+
+  run:
+    desc: "Run the weather-underground-uploader"
+    cmds:
+      - uv run --env-file .env weather-underground-uploader --config config.yaml

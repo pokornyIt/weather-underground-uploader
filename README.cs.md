@@ -7,11 +7,11 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Striktní načítání konfigurace, stav normalizovaných měření, MQTT příjem a
-> odesílání do Weather Underground jsou implementované. Plánování a integrace
-> životního cyklu služby zatím implementované nejsou.
+> Základní běh služby je implementovaný včetně striktní konfigurace, MQTT
+> příjmu, stavu normalizovaných měření, plánovaného odesílání a korektního
+> ukončení. Kontejnerové balení a CI zůstávají plánovanou prací.
 
-## Plánovaný tok dat
+## Tok dat
 
 ```text
 MQTT publishers
@@ -26,7 +26,7 @@ Weather Underground Uploader
 Weather Underground PWS
 ```
 
-MVP bude:
+Služba:
 
 - přijímat skalární a JSON měření z nakonfigurovaných MQTT témat,
 - normalizovat teplotu, relativní vlhkost a atmosférický tlak,
@@ -34,8 +34,7 @@ MVP bude:
 - kombinovat aktuální hodnoty do dílčích pozorování,
 - přeskakovat odeslání, pokud není k dispozici žádná aktuální hodnota,
 - odesílat pozorování v konfigurovatelném intervalu,
-- automaticky se znovu připojovat po ztrátě MQTT spojení,
-- běžet lokálně nebo v Docker kontejneru bez oprávnění uživatele root.
+- automaticky se znovu připojovat po ztrátě MQTT spojení.
 
 Aplikace nebude záviset na API Home Assistantu, konkrétním MQTT publisheru ani
 konkrétním výrobci senzorů.
@@ -80,8 +79,9 @@ uv run pyright
 uv run pytest
 ```
 
-Testovací sada pokrývá konfiguraci, spuštění CLI, zpracování měření, MQTT příjem
-a odesílání do Weather Underground bez požadavku na živé služby.
+Testovací sada pokrývá konfiguraci, spuštění CLI, zpracování měření, MQTT příjem,
+plánování, ukončení služby a odesílání do Weather Underground bez požadavku na
+živé služby.
 
 Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 
@@ -108,7 +108,11 @@ CLI před spuštěním striktně ověří celou konfiguraci. Neznámé klíče,
 nepodporované kombinace, duplicitní cíle a chybějící povinné hodnoty způsobí
 srozumitelnou chybu.
 
-Přihlašovací údaje se budou načítat pouze z proměnných prostředí:
+Scheduler před prvním odesláním čeká jeden celý nakonfigurovaný interval.
+Signály `SIGINT` a `SIGTERM` zastaví nová odesílání, odpojí MQTT a ukončí službu
+bez tracebacku.
+
+Přihlašovací údaje se načítají pouze z proměnných prostředí:
 
 ```text
 MQTT_USERNAME
@@ -140,8 +144,8 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 └── uv.lock
 ```
 
-Integrace životního cyklu služby, plánování a Docker nasazení budou přidány v
-rámci zbývajících implementačních issue.
+Nasazení v Docker kontejneru bez oprávnění uživatele root a CI budou přidány v
+rámci zbývajícího implementačního issue.
 
 ## Licence
 

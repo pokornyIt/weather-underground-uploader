@@ -7,11 +7,11 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> Strict configuration loading, normalized measurement state, MQTT ingestion,
-> and Weather Underground uploads are implemented. Scheduling and service
-> lifecycle integration are not implemented yet.
+> The core service runtime is implemented, including strict configuration,
+> MQTT ingestion, normalized measurement state, scheduled uploads, and graceful
+> shutdown. Container packaging and CI remain planned work.
 
-## Planned data flow
+## Data flow
 
 ```text
 MQTT publishers
@@ -26,7 +26,7 @@ Weather Underground Uploader
 Weather Underground PWS
 ```
 
-The MVP will:
+The service:
 
 - consume scalar and JSON measurements from configured MQTT topics,
 - normalize temperature, relative humidity, and atmospheric pressure,
@@ -34,8 +34,7 @@ The MVP will:
 - combine fresh values into partial observations,
 - skip uploads when no fresh value is available,
 - upload observations on a configurable schedule,
-- reconnect automatically after MQTT connection loss,
-- run locally or in a non-root Docker container.
+- reconnect automatically after MQTT connection loss.
 
 The application will not depend on Home Assistant APIs, a specific MQTT
 publisher, or a specific sensor vendor.
@@ -80,7 +79,8 @@ uv run pytest
 ```
 
 The test suite covers configuration, CLI startup, measurement processing, MQTT
-ingestion, and Weather Underground uploads without requiring live services.
+ingestion, scheduling, service shutdown, and Weather Underground uploads
+without requiring live services.
 
 Run all configured pre-commit hooks with:
 
@@ -107,7 +107,11 @@ The CLI strictly validates the complete configuration before startup. Unknown
 keys, unsupported combinations, duplicate targets, and missing required values
 cause an actionable error.
 
-Credentials will be read only from environment variables:
+The scheduler waits for one complete configured interval before the first
+upload. `SIGINT` and `SIGTERM` stop new uploads, disconnect MQTT, and end the
+service without a traceback.
+
+Credentials are read only from environment variables:
 
 ```text
 MQTT_USERNAME
@@ -139,8 +143,8 @@ issues, or test fixtures.
 └── uv.lock
 ```
 
-Service lifecycle integration, scheduling, and Docker deployment will be added
-during the remaining implementation issues.
+Non-root Docker deployment and CI will be added during the remaining
+implementation issue.
 
 ## License
 

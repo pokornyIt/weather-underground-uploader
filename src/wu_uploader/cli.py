@@ -3,20 +3,23 @@
 import argparse
 import logging
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import cast
 
 from wu_uploader.config import ConfigurationError, load_configuration
 from wu_uploader.models import ApplicationConfig
+from wu_uploader.service import run_application
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
+type ApplicationRunner = Callable[[ApplicationConfig], None]
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(argv: Sequence[str] | None = None, runner: ApplicationRunner = run_application) -> int:
     """Validate startup configuration and start the service.
 
     :param argv: Optional command-line arguments excluding the program name.
+    :param runner: Service runner replaceable by tests.
     :return: Process exit code.
     :raises SystemExit: If command-line arguments or startup configuration are invalid.
     """
@@ -35,6 +38,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         config_path,
         len(configuration.sources),
     )
+    runner(configuration)
     return 0
 
 
