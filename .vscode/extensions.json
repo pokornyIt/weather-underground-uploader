@@ -1,0 +1,17 @@
+{
+    "recommendations": [
+        "codezombiech.gitignore",
+        "mhutchie.git-graph",
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-czech",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "tamasfe.even-better-toml",
+        "ms-python.python",
+        "davidanson.vscode-markdownlint",
+        "editorconfig.editorconfig",
+        "charliermarsh.ruff",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-containers"
+    ]
+}
