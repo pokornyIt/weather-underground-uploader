@@ -7,8 +7,9 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> Strict configuration loading and the CLI entry point are implemented. MQTT
-> ingestion and Weather Underground uploads are not implemented yet.
+> Strict configuration loading, the CLI entry point, and normalized measurement
+> state are implemented. MQTT ingestion and Weather Underground uploads are not
+> implemented yet.
 
 ## Planned data flow
 
