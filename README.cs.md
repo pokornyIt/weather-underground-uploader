@@ -7,9 +7,8 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Základní běh služby je implementovaný včetně striktní konfigurace, MQTT
-> příjmu, stavu normalizovaných měření, plánovaného odesílání a korektního
-> ukončení. Kontejnerové balení a CI zůstávají plánovanou prací.
+> Běh MVP, kontejnerové balení bez oprávnění uživatele root a CI validace jsou
+> implementované.
 
 ## Tok dat
 
@@ -101,7 +100,7 @@ Zkopírujte `config.example.yaml`, upravte hodnoty specifické pro instalaci a
 výsledný soubor předejte CLI:
 
 ```bash
-uv run weather-underground-uploader --config config.yaml
+uv run --env-file .env weather-underground-uploader --config config.yaml
 ```
 
 CLI před spuštěním striktně ověří celou konfiguraci. Neznámé klíče,
@@ -124,11 +123,52 @@ WU_STATION_KEY
 Skutečné přihlašovací údaje necommitujte ani je neuvádějte v ukázkách
 konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích datech.
 
+## Nasazení v Dockeru
+
+Vytvořte lokální konfiguraci a soubor s přihlašovacími údaji z commitnutých
+ukázek:
+
+```bash
+cp config.example.yaml config.yaml
+cp .env.example .env
+```
+
+Oba soubory upravte pro cílovou instalaci. Skutečné přihlašovací údaje
+uchovávejte pouze v `.env`; oba lokální soubory Git ignoruje.
+
+Sestavte a spusťte službu:
+
+```bash
+docker compose up --build --detach
+```
+
+Sledujte strukturované logy služby nebo nasazení zastavte:
+
+```bash
+docker compose logs --follow
+docker compose down
+```
+
+Kontejner běží jako neprivilegovaný uživatel s kořenovým souborovým systémem
+pouze pro čtení. Compose připojuje `config.yaml` pouze pro čtení a restartuje
+službu, pokud nebyla explicitně zastavena.
+
+Změny kontejneru lokálně ověřte pomocí:
+
+```bash
+docker build .
+docker compose config
+```
+
 ## Hlavní soubory repozitáře
 
 ```text
 .
+├── .github/workflows/ci.yaml
 ├── .github/ISSUE_TEMPLATE/
+├── .dockerignore
+├── .env.example
+├── compose.yaml
 ├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
@@ -137,15 +177,13 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 ├── .python-version
 ├── AGENTS.md
 ├── CONTRIBUTING.md
+├── Dockerfile
 ├── LICENSE
 ├── README.cs.md
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
-
-Nasazení v Docker kontejneru bez oprávnění uživatele root a CI budou přidány v
-rámci zbývajícího implementačního issue.
 
 ## Licence
 

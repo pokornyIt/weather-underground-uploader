@@ -7,9 +7,8 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> The core service runtime is implemented, including strict configuration,
-> MQTT ingestion, normalized measurement state, scheduled uploads, and graceful
-> shutdown. Container packaging and CI remain planned work.
+> The MVP runtime, non-root container packaging, and CI validation are
+> implemented.
 
 ## Data flow
 
@@ -100,7 +99,7 @@ Copy `config.example.yaml`, adjust its installation-specific values, and pass
 the resulting file to the CLI:
 
 ```bash
-uv run weather-underground-uploader --config config.yaml
+uv run --env-file .env weather-underground-uploader --config config.yaml
 ```
 
 The CLI strictly validates the complete configuration before startup. Unknown
@@ -123,11 +122,51 @@ WU_STATION_KEY
 Do not commit real credentials or include them in configuration examples, logs,
 issues, or test fixtures.
 
+## Docker deployment
+
+Create local configuration and credential files from the committed examples:
+
+```bash
+cp config.example.yaml config.yaml
+cp .env.example .env
+```
+
+Edit both files for the target installation. Keep real credentials only in
+`.env`; both local files are ignored by Git.
+
+Build and start the service:
+
+```bash
+docker compose up --build --detach
+```
+
+Follow structured service logs or stop the deployment:
+
+```bash
+docker compose logs --follow
+docker compose down
+```
+
+The container runs as an unprivileged user with a read-only root filesystem.
+Compose mounts `config.yaml` read-only and restarts the service unless it is
+explicitly stopped.
+
+Validate container changes locally with:
+
+```bash
+docker build .
+docker compose config
+```
+
 ## Key repository files
 
 ```text
 .
+├── .github/workflows/ci.yaml
 ├── .github/ISSUE_TEMPLATE/
+├── .dockerignore
+├── .env.example
+├── compose.yaml
 ├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
@@ -136,15 +175,13 @@ issues, or test fixtures.
 ├── .python-version
 ├── AGENTS.md
 ├── CONTRIBUTING.md
+├── Dockerfile
 ├── LICENSE
 ├── README.cs.md
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
-
-Non-root Docker deployment and CI will be added during the remaining
-implementation issue.
 
 ## License
 
