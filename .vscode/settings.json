@@ -25,6 +25,7 @@
     "python.analysis.inlayHints.variableTypes": true,
     "python.analysis.autoImportCompletions": true,
     "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.terminal.useEnvFile": true,
     "python.terminal.activateEnvironment": true,
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -93,6 +94,7 @@
         "capsys",
         "inhg",
         "mqtt",
-        "pytest"
+        "pytest",
+        "caplog"
     ]
 }

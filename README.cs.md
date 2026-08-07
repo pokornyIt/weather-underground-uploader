@@ -7,8 +7,9 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Striktní načítání konfigurace a vstupní bod CLI jsou implementované. MQTT
-> příjem a odesílání do Weather Underground zatím implementované nejsou.
+> Striktní načítání konfigurace, vstupní bod CLI a stav normalizovaných měření
+> jsou implementované. MQTT příjem a odesílání do Weather Underground zatím
+> implementované nejsou.
 
 ## Plánovaný tok dat
 
