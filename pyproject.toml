@@ -2,13 +2,31 @@
 name = "weather-underground-uploader"
 version = "0.1.0"
 description = "Upload normalized MQTT weather observations to Weather Underground PWS."
+keywords = ["iot", "mqtt", "pws", "weather-station", "weather-underground"]
 authors = [{ name = "pokornyIt" }]
 license = "MIT"
 requires-python = ">=3.14,<3.15"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: No Input/Output (Daemon)",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Home Automation",
+  "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/pokornyIt/weather-underground-uploader"
+Issues = "https://github.com/pokornyIt/weather-underground-uploader/issues"
+Repository = "https://github.com/pokornyIt/weather-underground-uploader"
+
 [dependency-groups]
-dev = ["pre-commit>=4.0", "pyright>=1.1.390", "pytest>=8.0", "ruff>=0.9"]
+dev = ["pre-commit>=4.6", "pyright>=1.1.390", "pytest>=9.0", "ruff>=0.16"]
 
 [tool.pyright]
 exclude = [".venv"]

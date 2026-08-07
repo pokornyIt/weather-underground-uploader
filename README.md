@@ -44,8 +44,8 @@ publisher, or a specific sensor vendor.
 The authoritative project and MVP specification is
 [docs/en/PROJECT.md](docs/en/PROJECT.md).
 
-Repository contribution and automation instructions are in
-[AGENTS.md](AGENTS.md).
+Contribution instructions are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Repository automation instructions are in [AGENTS.md](AGENTS.md).
 
 ## Development requirements
 
@@ -78,7 +78,7 @@ The test suite will remain empty until the first application components are
 implemented. In that state, pytest exits with code 5 because it collects no
 tests.
 
-Once pre-commit configuration is added, run all configured hooks with:
+Run all configured pre-commit hooks with:
 
 ```bash
 uv run pre-commit run --all-files
@@ -112,10 +112,12 @@ issues, or test fixtures.
 
 ```text
 .
+├── .github/ISSUE_TEMPLATE/
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
 ├── .python-version
 ├── AGENTS.md
+├── CONTRIBUTING.md
 ├── LICENSE
 ├── README.cs.md
 ├── pyproject.toml

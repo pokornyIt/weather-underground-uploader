@@ -275,6 +275,12 @@ docker compose config
   image.
 - Do not add persistent storage unless the project specification changes.
 
+## Commits
+
+- Follow the commit subject format and allowed types documented in
+  `CONTRIBUTING.md`.
+- Include the related issue number in the subject for tracked work.
+
 ## Change discipline
 
 - Inspect the working tree before editing and preserve unrelated user changes.

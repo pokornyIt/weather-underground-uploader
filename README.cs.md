@@ -44,8 +44,9 @@ konkrétním výrobci senzorů.
 Autoritativní specifikace projektu a MVP je v souboru
 [docs/cs/PROJECT.md](docs/cs/PROJECT.md).
 
-Pokyny pro přispívání a automatizaci repozitáře jsou v souboru
-[AGENTS.md](AGENTS.md).
+Pokyny pro přispívání jsou v souboru
+[CONTRIBUTING.md](CONTRIBUTING.md).
+Pokyny pro automatizaci repozitáře jsou v souboru [AGENTS.md](AGENTS.md).
 
 ## Požadavky pro vývoj
 
@@ -77,7 +78,7 @@ uv run pytest
 Testovací sada zůstane prázdná do implementace prvních komponent aplikace. V
 tomto stavu pytest skončí s kódem 5, protože nenačte žádné testy.
 
-Po přidání konfigurace pre-commit spusťte všechny nakonfigurované hooky pomocí:
+Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 
 ```bash
 uv run pre-commit run --all-files
@@ -112,10 +113,12 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 
 ```text
 .
+├── .github/ISSUE_TEMPLATE/
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
 ├── .python-version
 ├── AGENTS.md
+├── CONTRIBUTING.md
 ├── LICENSE
 ├── README.cs.md
 ├── pyproject.toml
