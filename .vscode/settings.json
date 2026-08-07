@@ -104,6 +104,8 @@
         "INVALIDPASSWORDID",
         "softwaretype",
         "tempf",
-        "updateraw"
+        "updateraw",
+        "interruptible",
+        "signum"
     ]
 }

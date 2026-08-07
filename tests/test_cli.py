@@ -4,6 +4,7 @@ from typing import Final
 import pytest
 
 from wu_uploader.cli import main
+from wu_uploader.models import ApplicationConfig
 
 VALID_CONFIG: Final[str] = """\
 mqtt:
@@ -24,6 +25,22 @@ outputs:
 """
 
 
+class RecordingRunner:
+    """Record application configurations passed by the CLI."""
+
+    def __init__(self) -> None:
+        """Initialize an empty record of service runs."""
+        self.configurations: list[ApplicationConfig] = []
+
+    def __call__(self, configuration: ApplicationConfig) -> None:
+        """Record one validated application configuration.
+
+        :param configuration: Configuration passed to the service runner.
+        :return: None.
+        """
+        self.configurations.append(configuration)
+
+
 class TestMain:
     """Test the command-line startup boundary."""
 
@@ -31,8 +48,11 @@ class TestMain:
         """Verify that the CLI loads the file supplied through --config."""
         config_path: Path = tmp_path / "config.yaml"
         config_path.write_text(VALID_CONFIG, encoding="utf-8")
+        runner: RecordingRunner = RecordingRunner()
 
-        assert main(["--config", str(config_path)]) == 0
+        assert main(["--config", str(config_path)], runner=runner) == 0
+        assert len(runner.configurations) == 1
+        assert runner.configurations[0].mqtt.host == "mqtt.example.local"
 
     def test_exits_with_actionable_error_for_invalid_configuration(
         self,
