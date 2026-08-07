@@ -183,11 +183,11 @@ certifikátů operačního systému. Vypnutí ověřování certifikátu není p
 
 ### 4.4 Podporované cíle a jednotky
 
-| Cíl | Podporované vstupní jednotky | Interní jednotka |
-| --- | --- | --- |
-| `temperature` | `celsius`, `fahrenheit` | °C |
-| `humidity` | `percent` | % |
-| `pressure` | `hpa`, `pa`, `inhg` | hPa |
+| Cíl           | Podporované vstupní jednotky | Interní jednotka |
+| ------------- | ---------------------------- | ---------------- |
+| `temperature` | `celsius`, `fahrenheit`      | °C               |
+| `humidity`    | `percent`                    | %                |
+| `pressure`    | `hpa`, `pa`, `inhg`          | hPa              |
 
 Názvy cílů a jednotek rozlišují velikost písmen.
 
@@ -384,18 +384,20 @@ vynechají.
 
 Adaptér musí implementovat oficiální PWS Upload Protocol:
 
-https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
+<!-- markdownlint-disable MD013 -->
+[https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
+<!-- markdownlint-enable MD013 -->
 
 Oficiální dokumentace protokolu je autoritativním zdrojem pro endpoint, povinné
 parametry požadavku, jednotky protokolu a formát odpovědi.
 
 MVP mapuje:
 
-| Interní pole | Pole Weather Underground |
-| --- | --- |
-| temperature | venkovní teplota |
-| humidity | venkovní relativní vlhkost |
-| pressure | atmosférický tlak |
+| Interní pole | Pole Weather Underground   |
+| ------------ | -------------------------- |
+| temperature  | venkovní teplota           |
+| humidity     | venkovní relativní vlhkost |
+| pressure     | atmosférický tlak          |
 
 Adaptér musí:
 

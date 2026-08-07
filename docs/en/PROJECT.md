@@ -183,11 +183,11 @@ store. Disabling certificate verification is not supported.
 
 ### 4.4 Supported targets and units
 
-| Target | Supported input units | Internal unit |
-| --- | --- | --- |
-| `temperature` | `celsius`, `fahrenheit` | °C |
-| `humidity` | `percent` | % |
-| `pressure` | `hpa`, `pa`, `inhg` | hPa |
+| Target        | Supported input units   | Internal unit |
+| ------------- | ----------------------- | ------------- |
+| `temperature` | `celsius`, `fahrenheit` | °C            |
+| `humidity`    | `percent`               | %             |
+| `pressure`    | `hpa`, `pa`, `inhg`     | hPa           |
 
 Target and unit names are case-sensitive.
 
@@ -384,7 +384,9 @@ fresh, it is uploaded and any missing, invalid, or stale fields are omitted.
 
 The adapter must implement the official PWS Upload Protocol:
 
-https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
+<!-- markdownlint-disable MD013 -->
+[https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
+<!-- markdownlint-enable MD013 -->
 
 The official protocol documentation is the source of truth for the endpoint,
 required request parameters, protocol units, and response format.
@@ -392,10 +394,10 @@ required request parameters, protocol units, and response format.
 The MVP maps:
 
 | Internal field | Weather Underground field |
-| --- | --- |
-| temperature | outdoor temperature |
-| humidity | outdoor relative humidity |
-| pressure | atmospheric pressure |
+| -------------- | ------------------------- |
+| temperature    | outdoor temperature       |
+| humidity       | outdoor relative humidity |
+| pressure       | atmospheric pressure      |
 
 The adapter must:
 
