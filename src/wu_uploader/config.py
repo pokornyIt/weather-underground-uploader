@@ -21,11 +21,20 @@ class ConfigurationError(ValueError):
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):
-    pass
+    """YAML safe loader that rejects duplicate mapping keys."""
 
 
 class _ObjectConstructor(Protocol):
-    def construct_object(self, node: yaml.Node, deep: bool = False) -> object: ...
+    """Structural interface for constructing Python values from YAML nodes."""
+
+    def construct_object(self, node: yaml.Node, deep: bool = False) -> object:
+        """Construct a Python value from a YAML node.
+
+        :param node: YAML node to construct.
+        :param deep: Whether nested nodes should be constructed recursively.
+        :return: Constructed Python value.
+        """
+        ...
 
 
 def _construct_unique_mapping(
@@ -33,6 +42,14 @@ def _construct_unique_mapping(
     node: yaml.MappingNode,
     deep: bool = False,
 ) -> dict[object, object]:
+    """Construct a YAML mapping while rejecting duplicate or unhashable keys.
+
+    :param loader: Active YAML loader.
+    :param node: YAML mapping node to construct.
+    :param deep: Whether nested nodes should be constructed recursively.
+    :return: Constructed mapping with unique hashable keys.
+    :raises yaml.constructor.ConstructorError: If a key is unhashable or duplicated.
+    """
     mapping: dict[object, object] = {}
     constructor: _ObjectConstructor = cast(_ObjectConstructor, loader)
     for key_node, value_node in node.value:
@@ -83,6 +100,12 @@ def load_configuration(path: Path, environ: Mapping[str, str] | None = None) -> 
 
 
 def _load_yaml(path: Path) -> object:
+    """Read and parse a UTF-8 YAML configuration file.
+
+    :param path: Path to the configuration file.
+    :return: Parsed YAML document.
+    :raises ConfigurationError: If the file cannot be read or parsed safely.
+    """
     try:
         contents: str = path.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -104,6 +127,13 @@ def _load_yaml(path: Path) -> object:
 
 
 def _load_credentials(environ: Mapping[str, str], configuration: FileConfiguration) -> Credentials:
+    """Load and validate runtime credentials from an environment mapping.
+
+    :param environ: Environment variable mapping.
+    :param configuration: Validated file configuration controlling required credentials.
+    :return: Validated secret credential values.
+    :raises ConfigurationError: If a credential pair is incomplete or required values are missing.
+    """
     mqtt_username: str | None = environ.get(MQTT_USERNAME) or None
     mqtt_password: str | None = environ.get(MQTT_PASSWORD) or None
     if (mqtt_username is None) != (mqtt_password is None):
@@ -127,10 +157,21 @@ def _load_credentials(environ: Mapping[str, str], configuration: FileConfigurati
 
 
 def _to_secret(value: str | None) -> SecretStr | None:
+    """Wrap an optional credential value in Pydantic's secret type.
+
+    :param value: Plain credential value or ``None``.
+    :return: Protected secret value or ``None``.
+    """
     return SecretStr(value) if value is not None else None
 
 
 def _format_validation_error(path: Path, error: ValidationError) -> str:
+    """Format schema validation errors without exposing rejected input values.
+
+    :param path: Configuration path associated with the validation failure.
+    :param error: Pydantic validation error to summarize.
+    :return: Actionable sanitized validation message.
+    """
     details: list[str] = []
     for item in error.errors(include_input=False, include_url=False):
         location: str = ".".join(str(part) for part in item["loc"])

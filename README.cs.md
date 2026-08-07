@@ -7,9 +7,9 @@ sbírá meteorologická měření z MQTT a odesílá aktuální pozorování do 
 meteorologické stanice Weather Underground (PWS).
 
 > [!NOTE]
-> Striktní načítání konfigurace, vstupní bod CLI a stav normalizovaných měření
-> jsou implementované. MQTT příjem a odesílání do Weather Underground zatím
-> implementované nejsou.
+> Striktní načítání konfigurace, stav normalizovaných měření a MQTT příjem s
+> automatickým opětovným připojením jsou implementované. Odesílání do Weather
+> Underground a integrace životního cyklu služby zatím implementované nejsou.
 
 ## Plánovaný tok dat
 
@@ -76,7 +76,8 @@ uv run pyright
 uv run pytest
 ```
 
-Testovací sada pokrývá implementované chování konfigurace a CLI.
+Testovací sada pokrývá konfiguraci, spuštění CLI, zpracování měření a MQTT příjem
+bez požadavku na živý broker.
 
 Všechny nakonfigurované pre-commit hooky spusťte pomocí:
 
@@ -135,8 +136,8 @@ konfigurace, logovacích záznamech, hlášeních problémů nebo testovacích d
 └── uv.lock
 ```
 
-MQTT příjem, odesílání do Weather Underground, plánování a Docker nasazení budou
-přidány v rámci zbývajících implementačních issue.
+Odesílání do Weather Underground, integrace životního cyklu služby, plánování a
+Docker nasazení budou přidány v rámci zbývajících implementačních issue.
 
 ## Licence
 

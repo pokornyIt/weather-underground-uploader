@@ -12,6 +12,12 @@ _DURATION_MULTIPLIERS: Final[dict[str, int]] = {"s": 1, "m": 60, "h": 3600}
 
 
 def _parse_duration(value: object) -> int:
+    """Parse a positive duration string into whole seconds.
+
+    :param value: Candidate duration in ``<integer><s|m|h>`` format.
+    :return: Duration converted to seconds.
+    :raises ValueError: If the value does not use the required positive duration format.
+    """
     if not isinstance(value, str):
         raise ValueError("duration must be a positive integer followed by s, m, or h")
 
@@ -64,6 +70,8 @@ _TARGET_UNITS: Final[dict[Target, frozenset[Unit]]] = {
 
 
 class _ConfigurationModel(BaseModel):
+    """Strict immutable base model for project configuration."""
+
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", frozen=True)
 
 
@@ -97,6 +105,11 @@ class SourceConfig(_ConfigurationModel):
 
     @model_validator(mode="after")
     def _validate_source(self) -> Self:
+        """Validate payload extraction, topic, and target-unit constraints.
+
+        :return: Validated source configuration.
+        :raises ValueError: If source fields form an unsupported combination.
+        """
         if self.payload is PayloadFormat.JSON and self.value is None:
             raise ValueError("value is required when payload is json")
         if self.payload is PayloadFormat.SCALAR and self.value is not None:
@@ -130,6 +143,11 @@ class FileConfiguration(_ConfigurationModel):
 
     @model_validator(mode="after")
     def _validate_unique_targets(self) -> Self:
+        """Ensure that each normalized target has only one configured source.
+
+        :return: Validated file configuration.
+        :raises ValueError: If multiple sources target the same measurement.
+        """
         target_sources: dict[Target, str] = {}
         for source_name, source in self.sources.items():
             if existing_source := target_sources.get(source.target):

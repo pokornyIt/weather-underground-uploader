@@ -162,12 +162,25 @@ Use standard Python naming:
 
 ## Python docstrings
 
-- Every public function, method, and class must have an English docstring.
+- Every class, function, and method must have an English docstring. This also
+  applies to private helpers, nested functions, special methods, and
+  constructors such as `__init__`.
+- Constructor docstrings must describe every parameter other than `self` using
+  `:param <name>:` fields.
+- Private and nested functions follow the same documentation standard as public
+  functions; describe their parameters, return value, and raised exceptions
+  where applicable.
 - Use reStructuredText fields: `:param <name>:`, `:return:`, and
   `:raises <ExceptionType>:` where applicable.
 - Do not use `:type:` or `:rtype:` fields; types belong in annotations.
 - Keep docstrings focused on the contract, behavior, and non-obvious failure
   modes. Do not restate the implementation line by line.
+- Test methods must state the behavior they verify. They do not need `:param:`
+  fields for pytest fixtures or values supplied by `@pytest.mark.parametrize`.
+- Python does not attach docstrings to assigned constants. Add a concise English
+  comment for a constant only when its purpose, unit, or derivation is not clear
+  from its name, type, and surrounding context; do not place a bare string after
+  an assignment as a pseudo-docstring.
 
 ```python
 def load_sources(path: Path) -> list[str]:

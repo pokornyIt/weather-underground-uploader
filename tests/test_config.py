@@ -33,6 +33,12 @@ outputs:
 
 
 def _write_config(tmp_path: Path, contents: str) -> Path:
+    """Write one test configuration file.
+
+    :param tmp_path: Temporary test directory.
+    :param contents: YAML contents to write.
+    :return: Path to the written configuration file.
+    """
     path: Path = tmp_path / "config.yaml"
     path.write_text(contents, encoding="utf-8")
     return path

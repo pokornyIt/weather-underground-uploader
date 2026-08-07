@@ -12,6 +12,14 @@ def _source(
     payload: PayloadFormat = PayloadFormat.SCALAR,
     value_key: str | None = None,
 ) -> SourceConfig:
+    """Build a source configuration for normalization tests.
+
+    :param target: Normalized measurement target.
+    :param unit: Source measurement unit.
+    :param payload: MQTT payload encoding.
+    :param value_key: Optional top-level JSON key.
+    :return: Validated source configuration.
+    """
     values: dict[str, object] = {
         "topic": "sensors/value",
         "payload": payload.value,
