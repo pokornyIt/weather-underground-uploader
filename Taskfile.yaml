@@ -26,6 +26,11 @@ tasks:
     cmds:
       - uv sync
 
+  docker:build:
+    desc: "Build the local container image"
+    cmds:
+      - docker build --tag weather-underground-uploader:local .
+
   test:all:
     desc: "Run pytest for all tests"
     cmds:
