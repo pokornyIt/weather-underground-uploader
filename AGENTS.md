@@ -125,6 +125,11 @@ checks. Do not report a check as passing if it could not be run.
 - Follow PEP 8 and enforce the configured Ruff rules.
 - Add type annotations to every function and method signature, including return
   types.
+- Add explicit type annotations to module-level and local variables introduced
+  by assignment, even when the type checker could infer them.
+- Inline annotations are not required for targets of `for` loops,
+  comprehensions, `with ... as`, `except ... as`, assignment expressions, or
+  unpacking assignments where Python syntax does not support them directly.
 - Use precise types and avoid `Any`. Prefer `str | None` to `Optional[str]` and
   concrete built-in collections such as `list[str]` and `dict[str, int]`.
 - Use `TypeAlias` or `TypedDict` for complex data shapes when a dedicated model

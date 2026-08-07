@@ -7,8 +7,8 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> The repository is currently in the project bootstrap phase. The service is not
-> implemented or runnable yet.
+> Strict configuration loading and the CLI entry point are implemented. MQTT
+> ingestion and Weather Underground uploads are not implemented yet.
 
 ## Planned data flow
 
@@ -74,9 +74,7 @@ uv run pyright
 uv run pytest
 ```
 
-The test suite will remain empty until the first application components are
-implemented. In that state, pytest exits with code 5 because it collects no
-tests.
+The test suite covers the implemented configuration and CLI behavior.
 
 Run all configured pre-commit hooks with:
 
@@ -84,17 +82,24 @@ Run all configured pre-commit hooks with:
 uv run pre-commit run --all-files
 ```
 
-## Planned configuration
-
-The service will load a YAML configuration file supplied with:
+Run the manual pytest hook with:
 
 ```bash
-weather-underground-uploader --config config.yaml
+uv run pre-commit run pytest --hook-stage manual --all-files
 ```
 
-Installation-specific MQTT topics, payload fields, units, freshness limits, and
-upload intervals will live in that file. The final example configuration will be
-provided as `config.example.yaml` when configuration loading is implemented.
+## Configuration
+
+Copy `config.example.yaml`, adjust its installation-specific values, and pass
+the resulting file to the CLI:
+
+```bash
+uv run weather-underground-uploader --config config.yaml
+```
+
+The CLI strictly validates the complete configuration before startup. Unknown
+keys, unsupported combinations, duplicate targets, and missing required values
+cause an actionable error.
 
 Credentials will be read only from environment variables:
 
@@ -113,8 +118,11 @@ issues, or test fixtures.
 ```text
 .
 ├── .github/ISSUE_TEMPLATE/
+├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
+├── src/wu_uploader/
+├── tests/
 ├── .python-version
 ├── AGENTS.md
 ├── CONTRIBUTING.md
@@ -125,8 +133,8 @@ issues, or test fixtures.
 └── uv.lock
 ```
 
-The source package, tests, example configuration, Docker files, and runtime entry
-point will be added during implementation.
+MQTT ingestion, Weather Underground uploads, scheduling, and Docker deployment
+will be added during the remaining implementation issues.
 
 ## License
 

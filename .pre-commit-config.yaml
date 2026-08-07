@@ -39,3 +39,13 @@ repos:
     hooks:
       - id: markdownlint
         files: \.md$
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
