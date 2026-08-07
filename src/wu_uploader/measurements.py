@@ -32,9 +32,17 @@ class MeasurementSnapshot:
     measurements: tuple[Measurement, ...]
 
     def __iter__(self) -> Iterator[Measurement]:
+        """Iterate over measurements in deterministic target order.
+
+        :return: Iterator over snapshot measurements.
+        """
         return iter(self.measurements)
 
     def __len__(self) -> int:
+        """Return the number of fresh measurements in the snapshot.
+
+        :return: Number of snapshot measurements.
+        """
         return len(self.measurements)
 
     def get(self, target: Target) -> Measurement | None:
@@ -54,6 +62,11 @@ class MeasurementState:
     """
 
     def __init__(self, sources: Mapping[str, SourceConfig], clock: MonotonicClock = time.monotonic) -> None:
+        """Initialize an empty measurement cache.
+
+        :param sources: Configured measurement sources keyed by identifier.
+        :param clock: Monotonic clock used for receipt and freshness timestamps.
+        """
         self._sources: dict[str, SourceConfig] = dict(sources)
         self._clock: MonotonicClock = clock
         self._measurements: dict[Target, Measurement] = {}

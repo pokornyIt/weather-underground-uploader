@@ -6,6 +6,7 @@ from typing import Final, Never, cast
 
 from wu_uploader.models import PayloadFormat, SourceConfig, Target, Unit
 
+# Standard pressure conversion factor from inches of mercury to hectopascals.
 INHG_TO_HPA: Final[float] = 33.8638866667
 _INTERNAL_UNITS: Final[dict[Target, Unit]] = {
     Target.TEMPERATURE: Unit.CELSIUS,
@@ -25,6 +26,10 @@ class MeasurementError(ValueError):
     reason: str
 
     def __init__(self, reason: str) -> None:
+        """Initialize a rejected-measurement error.
+
+        :param reason: Stable machine-readable rejection reason.
+        """
         super().__init__(reason)
         self.reason = reason
 
@@ -128,6 +133,12 @@ def internal_unit(target: Target) -> Unit:
 
 
 def _decode_payload(payload: bytes) -> str:
+    """Decode an MQTT payload as UTF-8 text.
+
+    :param payload: Raw MQTT payload bytes.
+    :return: Decoded payload text.
+    :raises MeasurementError: If the payload is not valid UTF-8.
+    """
     try:
         return payload.decode("utf-8")
     except UnicodeDecodeError:
@@ -135,10 +146,21 @@ def _decode_payload(payload: bytes) -> str:
 
 
 def _reject_json_constant(_constant: str) -> Never:
+    """Reject non-standard non-finite JSON numeric constants.
+
+    :param _constant: Rejected JSON constant name.
+    :raises MeasurementError: Always, because the constant is not valid input.
+    """
     raise MeasurementError("non_finite")
 
 
 def _json_number(value: object) -> float:
+    """Convert a JSON numeric value to a finite float.
+
+    :param value: Extracted JSON value.
+    :return: Finite floating-point representation.
+    :raises MeasurementError: If the value is not a JSON number or is non-finite.
+    """
     if isinstance(value, bool) or not isinstance(value, int | float):
         raise MeasurementError("json_value_not_number")
     try:
@@ -150,11 +172,24 @@ def _json_number(value: object) -> float:
 
 
 def _ensure_finite(value: float) -> None:
+    """Reject a non-finite floating-point value.
+
+    :param value: Floating-point value to validate.
+    :return: None.
+    :raises MeasurementError: If the value is NaN or infinite.
+    """
     if not math.isfinite(value):
         raise MeasurementError("non_finite")
 
 
 def _convert_to_internal_unit(value: float, source: SourceConfig) -> float:
+    """Convert a source value into the target's internal unit.
+
+    :param value: Finite value in the configured source unit.
+    :param source: Source configuration defining the unit and target.
+    :return: Value converted to the target's internal unit.
+    :raises MeasurementError: If the target-unit combination is unsupported.
+    """
     if source.target is Target.TEMPERATURE:
         if source.unit is Unit.CELSIUS:
             return value

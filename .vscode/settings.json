@@ -95,6 +95,8 @@
         "inhg",
         "mqtt",
         "pytest",
-        "caplog"
+        "caplog",
+        "paho",
+        "reasoncodes"
     ]
 }

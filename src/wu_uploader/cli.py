@@ -39,6 +39,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _build_parser() -> argparse.ArgumentParser:
+    """Build the command-line argument parser.
+
+    :return: Configured application argument parser.
+    """
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Upload MQTT weather observations to Weather Underground PWS."
     )
@@ -47,4 +51,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _configure_logging() -> None:
+    """Configure structured application logging on standard output.
+
+    :return: None.
+    """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s", stream=sys.stdout)

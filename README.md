@@ -7,9 +7,9 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> Strict configuration loading, the CLI entry point, and normalized measurement
-> state are implemented. MQTT ingestion and Weather Underground uploads are not
-> implemented yet.
+> Strict configuration loading, normalized measurement state, and MQTT ingestion
+> with automatic reconnection are implemented. Weather Underground uploads and
+> service lifecycle integration are not implemented yet.
 
 ## Planned data flow
 
@@ -75,7 +75,8 @@ uv run pyright
 uv run pytest
 ```
 
-The test suite covers the implemented configuration and CLI behavior.
+The test suite covers configuration, CLI startup, measurement processing, and
+MQTT ingestion without requiring a live broker.
 
 Run all configured pre-commit hooks with:
 
@@ -134,8 +135,8 @@ issues, or test fixtures.
 └── uv.lock
 ```
 
-MQTT ingestion, Weather Underground uploads, scheduling, and Docker deployment
-will be added during the remaining implementation issues.
+Weather Underground uploads, service lifecycle integration, scheduling, and
+Docker deployment will be added during the remaining implementation issues.
 
 ## License
 

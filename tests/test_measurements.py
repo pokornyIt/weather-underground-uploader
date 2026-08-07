@@ -11,10 +11,17 @@ class FakeClock:
     """Controllable monotonic clock for measurement state tests."""
 
     def __init__(self, initial: float = 0.0) -> None:
+        """Initialize the clock at a monotonic timestamp.
+
+        :param initial: Initial monotonic timestamp in seconds.
+        """
         self._value: float = initial
 
     def __call__(self) -> float:
-        """Return the current monotonic timestamp."""
+        """Return the current monotonic timestamp.
+
+        :return: Current monotonic timestamp in seconds.
+        """
         return self._value
 
     def advance(self, seconds: float) -> None:
@@ -27,6 +34,13 @@ class FakeClock:
 
 
 def _source(target: Target, unit: Unit, max_age: int = 60) -> SourceConfig:
+    """Build a scalar source configuration for state tests.
+
+    :param target: Normalized measurement target.
+    :param unit: Source measurement unit.
+    :param max_age: Freshness duration in seconds.
+    :return: Validated source configuration.
+    """
     values: dict[str, object] = {
         "topic": f"sensors/{target.value}",
         "payload": PayloadFormat.SCALAR.value,
