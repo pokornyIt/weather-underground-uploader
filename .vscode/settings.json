@@ -97,6 +97,13 @@
         "pytest",
         "caplog",
         "paho",
-        "reasoncodes"
+        "reasoncodes",
+        "baromin",
+        "dateutc",
+        "hectopascals",
+        "INVALIDPASSWORDID",
+        "softwaretype",
+        "tempf",
+        "updateraw"
     ]
 }

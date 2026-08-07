@@ -7,9 +7,9 @@ for collecting weather measurements from MQTT and uploading fresh observations
 to a Weather Underground Personal Weather Station (PWS).
 
 > [!NOTE]
-> Strict configuration loading, normalized measurement state, and MQTT ingestion
-> with automatic reconnection are implemented. Weather Underground uploads and
-> service lifecycle integration are not implemented yet.
+> Strict configuration loading, normalized measurement state, MQTT ingestion,
+> and Weather Underground uploads are implemented. Scheduling and service
+> lifecycle integration are not implemented yet.
 
 ## Planned data flow
 
@@ -45,6 +45,10 @@ publisher, or a specific sensor vendor.
 The authoritative project and MVP specification is
 [docs/en/PROJECT.md](docs/en/PROJECT.md).
 
+Use the [Weather Underground PWS setup guide](docs/en/weather-underground-pws-setup-guide.md) to register a station
+and obtain the Station ID and Station Key. A local copy of the official
+[PWS Upload Protocol](docs/pws-upload-Protocol.pdf) is also available.
+
 Contribution instructions are in [CONTRIBUTING.md](CONTRIBUTING.md).
 Repository automation instructions are in [AGENTS.md](AGENTS.md).
 
@@ -75,8 +79,8 @@ uv run pyright
 uv run pytest
 ```
 
-The test suite covers configuration, CLI startup, measurement processing, and
-MQTT ingestion without requiring a live broker.
+The test suite covers configuration, CLI startup, measurement processing, MQTT
+ingestion, and Weather Underground uploads without requiring live services.
 
 Run all configured pre-commit hooks with:
 
@@ -135,8 +139,8 @@ issues, or test fixtures.
 └── uv.lock
 ```
 
-Weather Underground uploads, service lifecycle integration, scheduling, and
-Docker deployment will be added during the remaining implementation issues.
+Service lifecycle integration, scheduling, and Docker deployment will be added
+during the remaining implementation issues.
 
 ## License
 
