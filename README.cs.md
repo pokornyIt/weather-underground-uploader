@@ -25,7 +25,7 @@ Weather Underground Uploader
 Weather Underground PWS
 ```
 
-Služba:
+Služba umí:
 
 - přijímat skalární a JSON měření z nakonfigurovaných MQTT témat,
 - normalizovat teplotu, relativní vlhkost a atmosférický tlak,
@@ -35,7 +35,7 @@ Služba:
 - odesílat pozorování v konfigurovatelném intervalu,
 - automaticky se znovu připojovat po ztrátě MQTT spojení.
 
-Aplikace nebude záviset na API Home Assistantu, konkrétním MQTT publisheru ani
+Aplikace nezávisí na API Home Assistantu, konkrétním MQTT publisheru ani
 konkrétním výrobci senzorů.
 
 ## Dokumentace
@@ -96,8 +96,15 @@ uv run pre-commit run pytest --hook-stage manual --all-files
 
 ## Konfigurace
 
-Zkopírujte `config.example.yaml`, upravte hodnoty specifické pro instalaci a
-výsledný soubor předejte CLI:
+Vytvořte lokální konfiguraci a soubor s přihlašovacími údaji z commitnutých
+ukázek:
+
+```bash
+cp config.example.yaml config.yaml
+cp .env.example .env
+```
+
+Oba soubory upravte pro cílovou instalaci a výslednou konfiguraci předejte CLI:
 
 ```bash
 uv run --env-file .env weather-underground-uploader --config config.yaml

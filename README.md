@@ -25,7 +25,7 @@ Weather Underground Uploader
 Weather Underground PWS
 ```
 
-The service:
+The service can:
 
 - consume scalar and JSON measurements from configured MQTT topics,
 - normalize temperature, relative humidity, and atmospheric pressure,
@@ -35,7 +35,7 @@ The service:
 - upload observations on a configurable schedule,
 - reconnect automatically after MQTT connection loss.
 
-The application will not depend on Home Assistant APIs, a specific MQTT
+The application does not depend on Home Assistant APIs, a specific MQTT
 publisher, or a specific sensor vendor.
 
 ## Documentation
@@ -95,8 +95,16 @@ uv run pre-commit run pytest --hook-stage manual --all-files
 
 ## Configuration
 
-Copy `config.example.yaml`, adjust its installation-specific values, and pass
-the resulting file to the CLI:
+Create the local configuration and credential files from the committed
+examples:
+
+```bash
+cp config.example.yaml config.yaml
+cp .env.example .env
+```
+
+Adjust both files for the target installation, then pass the resulting
+configuration to the CLI:
 
 ```bash
 uv run --env-file .env weather-underground-uploader --config config.yaml

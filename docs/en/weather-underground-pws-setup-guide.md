@@ -435,7 +435,7 @@ One Weather Underground observation may combine several physical sensors.
 - check the Weather Underground response,
 - avoid an aggressive retry loop during temporary Weather Underground failures.
 
-A reasonable hobby upload interval can be 60 seconds.
+A five-minute upload interval is a reasonable default for hobby use.
 
 ## 18. Useful links
 

@@ -433,10 +433,10 @@ Jedna WU observation může být sestavena z více fyzických senzorů.
 - chybějící nebo staré hodnoty neposílat,
 - kontrolovat stáří MQTT dat,
 - převody jednotek dělat až před WU uploadem,
-- logovat odpověď WU,
+- kontrolovat odpověď WU,
 - při dočasném výpadku WU nepoužívat agresivní retry loop.
 
-Rozumný hobby upload interval může být například 60 sekund.
+Rozumný výchozí interval odesílání pro hobby použití je pět minut.
 
 ## 18. Užitečné odkazy
 
