@@ -463,8 +463,8 @@ pro člověka.
 ```text
 INFO event=mqtt_connected host=mqtt.example.local
 INFO event=measurement_updated source=outdoor_temperature target=temperature value=18.4 unit=celsius
-WARN event=measurement_stale source=pressure age_seconds=421 max_age_seconds=300
-WARN event=invalid_measurement source=outdoor_humidity reason=out_of_range
+WARNING event=measurement_stale source=pressure age_seconds=421 max_age_seconds=300
+WARNING event=invalid_measurement source=outdoor_humidity reason=out_of_range
 INFO event=wu_upload_succeeded fields=temperature,humidity
 ERROR event=wu_upload_failed reason=http_error status=500
 ```
@@ -504,11 +504,13 @@ Jednoduché úvodní rozdělení je:
 
 ```text
 config
+cli
 mqtt
 measurements
 normalization
 models
 scheduler
+service
 outputs/weather_underground
 ```
 
