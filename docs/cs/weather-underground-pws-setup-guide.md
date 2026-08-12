@@ -467,3 +467,8 @@ Rozumný výchozí interval odesílání pro hobby použití je pět minut.
 ```
 
 Pokud všechny body projdou, máte funkční vlastní Weather Underground PWS i přístup k Weather Underground API.
+
+## 20. Příklady pro Home Assistant
+
+Volitelné [příklady pro Home Assistant](home-assistant.md) používají API Key ke zpětnému načtení odeslaného pozorování
+do dashboardu. Obsahují základní konfiguraci jedné stanice a anonymizovanou oblastní agregaci pěti stanic.

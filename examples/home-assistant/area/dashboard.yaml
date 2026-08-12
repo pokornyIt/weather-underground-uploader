@@ -1,0 +1,278 @@
+views:
+  - title: "Weather Underground Area"
+    path: weather-underground-area
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 3
+    badges:
+      - type: custom:mushroom-template-badge
+        entity: binary_sensor.wu_area_rain
+        icon: >
+          {{ 'mdi:weather-rainy' if is_state(entity, 'on') else 'mdi:weather-partly-cloudy' }}
+        content: >
+          {{ 'Rain detected' if is_state(entity, 'on') else 'No rain' }}
+        color: >
+          {{ 'blue' if is_state(entity, 'on') else 'green' }}
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-template-badge
+        entity: sensor.wu_area_uv_index
+        icon: mdi:weather-sunny
+        content: "UV {{ states(entity) }}"
+        color: >
+          {% set uv = states(entity) | float(-1) %}
+          {{ 'disabled' if uv < 0 else 'green' if uv < 3 else 'yellow' if uv < 6
+             else 'red' if uv < 11 else 'purple' }}
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-template-badge
+        entity: sensor.wu_area_valid_stations
+        icon: mdi:access-point-check
+        content: >
+          {{ states(entity) }}/{{ states('sensor.wu_area_configured_stations') }}
+        color: >
+          {% set valid = states(entity) | int(0) %}
+          {% set configured = states('sensor.wu_area_configured_stations') | int(0) %}
+          {{ 'green' if configured > 0 and valid == configured else 'yellow' if valid >= 3 else 'red' }}
+        tap_action:
+          action: more-info
+
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: "Current conditions"
+            icon: mdi:weather-partly-cloudy
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_temperature
+            icon: mdi:thermometer
+            color: >
+              {{ 'blue' if is_number(states(entity)) else 'disabled' }}
+            primary: "Temperature"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+            features:
+              - type: trend-graph
+                hours_to_show: 24
+                detail: true
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_humidity
+            icon: mdi:water-percent
+            color: >
+              {{ 'blue' if is_number(states(entity)) else 'disabled' }}
+            primary: "Humidity"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+            features:
+              - type: trend-graph
+                hours_to_show: 24
+                detail: true
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_pressure
+            icon: mdi:gauge
+            color: >
+              {{ 'blue' if is_number(states(entity)) else 'disabled' }}
+            primary: "Pressure"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+            features:
+              - type: trend-graph
+                hours_to_show: 24
+                detail: true
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_dew_point
+            icon: mdi:thermometer-water
+            color: >
+              {{ 'blue' if is_number(states(entity)) else 'disabled' }}
+            primary: "Dew point"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_uv_index
+            icon: mdi:weather-sunny
+            color: >
+              {% set uv = states(entity) | float(-1) %}
+              {{ 'disabled' if uv < 0 else 'green' if uv < 3 else 'yellow' if uv < 6
+                 else 'red' if uv < 11 else 'purple' }}
+            primary: "UV index"
+            secondary: "{{ states(entity) }}"
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_solar_radiation
+            icon: mdi:solar-power
+            color: >
+              {{ 'amber' if is_number(states(entity)) else 'disabled' }}
+            primary: "Solar radiation"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: "Rain"
+            icon: mdi:weather-rainy
+
+          - type: custom:mushroom-template-card
+            entity: binary_sensor.wu_area_rain
+            icon: >
+              {{ 'mdi:weather-rainy' if is_state(entity, 'on') else 'mdi:weather-cloudy' }}
+            color: >
+              {{ 'blue' if is_state(entity, 'on') else 'disabled' }}
+            primary: "Rain in the area"
+            secondary: >
+              {{ 'Detected' if is_state(entity, 'on') else 'Dry' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_raining_stations
+            icon: mdi:counter
+            color: >
+              {{ 'blue' if states(entity) | int(0) > 0 else 'disabled' }}
+            primary: "Stations reporting rain"
+            secondary: >
+              {{ states(entity) }}/{{ states('sensor.wu_area_valid_stations') }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_precipitation_rate
+            icon: mdi:weather-pouring
+            color: blue
+            primary: "Typical intensity"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_precipitation_rate_max
+            icon: mdi:weather-pouring
+            color: blue
+            primary: "Maximum intensity"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_rain_daily
+            icon: mdi:cup-water
+            color: blue
+            primary: "Daily total"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+            features:
+              - type: trend-graph
+                hours_to_show: 24
+                detail: true
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_rain_weekly
+            icon: mdi:cup-water
+            color: blue
+            primary: "Weekly total"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+            features:
+              - type: trend-graph
+                hours_to_show: 168
+                detail: true
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_rain_monthly
+            icon: mdi:cup-water
+            color: blue
+            primary: "Monthly total"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_rain_yearly
+            icon: mdi:cup-water
+            color: blue
+            primary: "Yearly total"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: "Wind"
+            icon: mdi:weather-windy
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_wind_speed
+            icon: mdi:weather-windy
+            color: blue
+            primary: "Speed"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_wind_gust
+            icon: mdi:weather-windy-variant
+            color: blue
+            primary: "Gust"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_area_wind_direction
+            icon: mdi:compass-outline
+            color: blue
+            primary: "Direction"
+            secondary: >
+              {{ states(entity) }}{{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: "Source stations"
+            icon: mdi:access-point-network
+          - type: entities
+            title: "Weather Underground"
+            entities:
+              - entity: sensor.wu_area_station_1
+                name: "Station 1"
+              - entity: sensor.wu_area_station_2
+                name: "Station 2"
+              - entity: sensor.wu_area_station_3
+                name: "Station 3"
+              - entity: sensor.wu_area_station_4
+                name: "Station 4"
+              - entity: sensor.wu_area_station_5
+                name: "Station 5"

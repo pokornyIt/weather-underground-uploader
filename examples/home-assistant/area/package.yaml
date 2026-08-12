@@ -1,0 +1,425 @@
+# Home Assistant package for aggregating five nearby Weather Underground PWS stations.
+# Add or remove complete REST entries and keep the group below synchronized.
+
+rest:
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_area_station_1_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "WU Area Station 1"
+        unique_id: wu_area_station_1
+        value_template: &wu_area_value_template >
+          {% set observations = value_json.observations | default([]) %}
+          {{ observations[0].obsTimeUtc if observations | count > 0 else none }}
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes: &wu_area_attributes
+          - stationID
+          - obsTimeLocal
+          - neighborhood
+          - solarRadiation
+          - uv
+          - winddir
+          - humidity
+          - qcStatus
+          - metric
+
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_area_station_2_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "WU Area Station 2"
+        unique_id: wu_area_station_2
+        value_template: *wu_area_value_template
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes: *wu_area_attributes
+
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_area_station_3_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "WU Area Station 3"
+        unique_id: wu_area_station_3
+        value_template: *wu_area_value_template
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes: *wu_area_attributes
+
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_area_station_4_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "WU Area Station 4"
+        unique_id: wu_area_station_4
+        value_template: *wu_area_value_template
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes: *wu_area_attributes
+
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_area_station_5_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "WU Area Station 5"
+        unique_id: wu_area_station_5
+        value_template: *wu_area_value_template
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes: *wu_area_attributes
+
+group:
+  wu_area_stations:
+    name: "WU Area Stations"
+    entities:
+      - sensor.wu_area_station_1
+      - sensor.wu_area_station_2
+      - sensor.wu_area_station_3
+      - sensor.wu_area_station_4
+      - sensor.wu_area_station_5
+
+template:
+  - sensor:
+      - name: "WU Area Configured Stations"
+        unique_id: wu_area_configured_stations
+        state: >
+          {{ state_attr('group.wu_area_stations', 'entity_id') | default([], true) | count }}
+
+      - name: "WU Area Valid Stations"
+        unique_id: wu_area_valid_stations
+        state: >
+          {% set ns = namespace(count=0) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600 %}
+              {% set ns.count = ns.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.count }}
+
+      - name: "WU Area Temperature"
+        unique_id: wu_area_temperature
+        device_class: temperature
+        unit_of_measurement: "°C"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.temp | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= -100 and value <= 100 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Humidity"
+        unique_id: wu_area_humidity
+        device_class: humidity
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set value = source.attributes.humidity | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 100 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(0)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Pressure"
+        unique_id: wu_area_pressure
+        device_class: atmospheric_pressure
+        unit_of_measurement: "hPa"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.pressure | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 300 and value <= 1200 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Dew Point"
+        unique_id: wu_area_dew_point
+        device_class: temperature
+        unit_of_measurement: "°C"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.dewpt | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= -100 and value <= 100 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area UV Index"
+        unique_id: wu_area_uv_index
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set value = source.attributes.uv | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 30 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Solar Radiation"
+        unique_id: wu_area_solar_radiation
+        device_class: irradiance
+        unit_of_measurement: "W/m²"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set value = source.attributes.solarRadiation | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 1600 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(0)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Wind Speed"
+        unique_id: wu_area_wind_speed
+        device_class: wind_speed
+        unit_of_measurement: "km/h"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.windSpeed | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 300 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Wind Gust"
+        unique_id: wu_area_wind_gust
+        device_class: wind_speed
+        unit_of_measurement: "km/h"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.windGust | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 400 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(1)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Wind Direction"
+        unique_id: wu_area_wind_direction
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(x=0.0, y=0.0, count=0) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set value = source.attributes.winddir | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 360 %}
+              {% set radians = (value | float) * pi / 180 %}
+              {% set ns.x = ns.x + cos(radians) %}
+              {% set ns.y = ns.y + sin(radians) %}
+              {% set ns.count = ns.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ ((atan2(ns.y, ns.x) * 180 / pi + 360) % 360) | round(0)
+             if ns.count >= 3 else none }}
+
+      - name: "WU Area Precipitation Total"
+        unique_id: wu_area_precipitation_total
+        device_class: precipitation
+        unit_of_measurement: "mm"
+        state_class: total_increasing
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.precipTotal | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 1000 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(2)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Precipitation Rate"
+        unique_id: wu_area_precipitation_rate
+        device_class: precipitation_intensity
+        unit_of_measurement: "mm/h"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.precipRate | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 1000 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | median(default=none) | round(2)
+             if ns.values | count >= 3 else none }}
+
+      - name: "WU Area Precipitation Rate Max"
+        unique_id: wu_area_precipitation_rate_max
+        device_class: precipitation_intensity
+        unit_of_measurement: "mm/h"
+        state_class: measurement
+        state: >
+          {% set ns = namespace(values=[]) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.precipRate | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value >= 0 and value <= 1000 %}
+              {% set ns.values = ns.values + [value | float] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.values | max | round(2) if ns.values | count >= 1 else none }}
+
+      - name: "WU Area Raining Stations"
+        unique_id: wu_area_raining_stations
+        state: >
+          {% set ns = namespace(count=0) %}
+          {% for source in expand('group.wu_area_stations') %}
+            {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+            {% set metric = source.attributes.metric | default({}, true) %}
+            {% set value = metric.precipRate | default(none) %}
+            {% if source.state not in ['unknown', 'unavailable']
+                  and source.attributes.qcStatus | int(0) == 1
+                  and age >= 0 and age <= 3600
+                  and value is number and value > 0 %}
+              {% set ns.count = ns.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.count }}
+
+  - binary_sensor:
+      - name: "WU Area Rain"
+        unique_id: wu_area_rain
+        device_class: moisture
+        state: >
+          {{ states('sensor.wu_area_raining_stations') | int(0) > 0 }}
+
+utility_meter:
+  wu_area_rain_daily:
+    source: sensor.wu_area_precipitation_total
+    name: "WU Area Rain Daily"
+    unique_id: wu_area_rain_daily
+    cycle: daily
+    periodically_resetting: true
+
+  wu_area_rain_weekly:
+    source: sensor.wu_area_precipitation_total
+    name: "WU Area Rain Weekly"
+    unique_id: wu_area_rain_weekly
+    cycle: weekly
+    periodically_resetting: true
+
+  wu_area_rain_monthly:
+    source: sensor.wu_area_precipitation_total
+    name: "WU Area Rain Monthly"
+    unique_id: wu_area_rain_monthly
+    cycle: monthly
+    periodically_resetting: true
+
+  wu_area_rain_yearly:
+    source: sensor.wu_area_precipitation_total
+    name: "WU Area Rain Yearly"
+    unique_id: wu_area_rain_yearly
+    cycle: yearly
+    periodically_resetting: true

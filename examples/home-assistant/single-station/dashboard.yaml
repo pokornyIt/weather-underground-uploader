@@ -1,0 +1,75 @@
+views:
+  - title: "Weather Underground"
+    path: weather-underground
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: "Current observation"
+            icon: mdi:weather-partly-cloudy
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_temperature
+            icon: mdi:thermometer
+            color: >
+              {{ 'orange' if is_number(states(entity)) else 'disabled' }}
+            primary: "Temperature"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_humidity
+            icon: mdi:water-percent
+            color: >
+              {{ 'blue' if is_number(states(entity)) else 'disabled' }}
+            primary: "Humidity"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            entity: sensor.wu_pressure
+            icon: mdi:gauge
+            color: >
+              {{ 'green' if is_number(states(entity)) else 'disabled' }}
+            primary: "Pressure"
+            secondary: >
+              {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') or '' }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            entity: sensor.weather_underground_station
+            icon: mdi:clock-outline
+            color: >
+              {{ 'green' if states(entity) not in ['unknown', 'unavailable'] else 'disabled' }}
+            primary: "Last observation"
+            secondary: "{{ states(entity) }}"
+            tap_action:
+              action: more-info
+
+      - type: grid
+        cards:
+          - type: statistics-graph
+            title: "Temperature"
+            chart_type: line
+            period: hour
+            days_to_show: 2
+            stat_types:
+              - mean
+            entities:
+              - sensor.wu_temperature
+
+      - type: grid
+        cards:
+          - type: statistics-graph
+            title: "Pressure"
+            chart_type: line
+            period: hour
+            days_to_show: 2
+            stat_types:
+              - mean
+            entities:
+              - sensor.wu_pressure

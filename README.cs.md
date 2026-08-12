@@ -47,6 +47,9 @@ Pro registraci stanice a získání Station ID a Station Key použijte
 [návod k nastavení Weather Underground PWS](docs/cs/weather-underground-pws-setup-guide.md). K dispozici je také
 lokální kopie oficiálního dokumentu [PWS Upload Protocol](docs/pws-upload-Protocol.pdf).
 
+Volitelné [příklady pro Home Assistant](docs/cs/home-assistant.md) ukazují zpětné načtení odeslaného pozorování přes
+Weather.com API a agregaci pěti okolních PWS.
+
 Pokyny pro přispívání jsou v souboru
 [CONTRIBUTING.md](CONTRIBUTING.md).
 Pokyny pro automatizaci repozitáře jsou v souboru [AGENTS.md](AGENTS.md).
@@ -179,6 +182,7 @@ docker compose config
 ├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
+├── examples/home-assistant/
 ├── src/wu_uploader/
 ├── tests/
 ├── .python-version
