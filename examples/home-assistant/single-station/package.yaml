@@ -1,0 +1,81 @@
+# Home Assistant package for reading one Weather Underground PWS.
+# The API Key is a read credential and is different from the Station Key used by the uploader.
+
+rest:
+  - resource: https://api.weather.com/v2/pws/observations/current
+    scan_interval: 1200
+    timeout: 10
+    params:
+      stationId: !secret wu_station_id
+      format: json
+      units: m
+      apiKey: !secret weather_com_api_key
+    sensor:
+      - name: "Weather Underground Station"
+        unique_id: weather_underground_station
+        value_template: >
+          {% set observations = value_json.observations | default([]) %}
+          {{ observations[0].obsTimeUtc if observations | count > 0 else none }}
+        device_class: timestamp
+        json_attributes_path: "$.observations[0]"
+        json_attributes:
+          - stationID
+          - obsTimeLocal
+          - neighborhood
+          - humidity
+          - qcStatus
+          - metric
+
+template:
+  - sensor:
+      - name: "WU Temperature"
+        unique_id: wu_temperature
+        device_class: temperature
+        unit_of_measurement: "°C"
+        state_class: measurement
+        availability: >
+          {% set source = states.sensor.weather_underground_station %}
+          {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+          {% set metric = source.attributes.metric | default({}, true) %}
+          {% set value = metric.temp | default(none) %}
+          {{ source.state not in ['unknown', 'unavailable']
+             and source.attributes.qcStatus | int(0) == 1
+             and age >= 0 and age <= 3600
+             and value is number and value >= -100 and value <= 100 }}
+        state: >
+          {% set metric = state_attr('sensor.weather_underground_station', 'metric') | default({}, true) %}
+          {{ metric.temp | default(none) | float(none) }}
+
+      - name: "WU Humidity"
+        unique_id: wu_humidity
+        device_class: humidity
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: >
+          {% set source = states.sensor.weather_underground_station %}
+          {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+          {% set value = source.attributes.humidity | default(none) %}
+          {{ source.state not in ['unknown', 'unavailable']
+             and source.attributes.qcStatus | int(0) == 1
+             and age >= 0 and age <= 3600
+             and value is number and value >= 0 and value <= 100 }}
+        state: >
+          {{ state_attr('sensor.weather_underground_station', 'humidity') | float(none) }}
+
+      - name: "WU Pressure"
+        unique_id: wu_pressure
+        device_class: atmospheric_pressure
+        unit_of_measurement: "hPa"
+        state_class: measurement
+        availability: >
+          {% set source = states.sensor.weather_underground_station %}
+          {% set age = as_timestamp(now()) - as_timestamp(source.state, 0) %}
+          {% set metric = source.attributes.metric | default({}, true) %}
+          {% set value = metric.pressure | default(none) %}
+          {{ source.state not in ['unknown', 'unavailable']
+             and source.attributes.qcStatus | int(0) == 1
+             and age >= 0 and age <= 3600
+             and value is number and value >= 300 and value <= 1200 }}
+        state: >
+          {% set metric = state_attr('sensor.weather_underground_station', 'metric') | default({}, true) %}
+          {{ metric.pressure | default(none) | float(none) }}

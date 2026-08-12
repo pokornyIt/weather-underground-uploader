@@ -466,3 +466,8 @@ A five-minute upload interval is a reasonable default for hobby use.
 ```
 
 After every item is complete, the Weather Underground PWS and optional Weather API access are working.
+
+## 20. Home Assistant examples
+
+The optional [Home Assistant examples](home-assistant.md) use the API Key to read the uploaded observation into a
+dashboard. They include a basic single-station configuration and an anonymized five-station area aggregation.

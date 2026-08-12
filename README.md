@@ -47,6 +47,9 @@ Use the [Weather Underground PWS setup guide](docs/en/weather-underground-pws-se
 and obtain the Station ID and Station Key. A local copy of the official
 [PWS Upload Protocol](docs/pws-upload-Protocol.pdf) is also available.
 
+The optional [Home Assistant examples](docs/en/home-assistant.md) show how to read the uploaded observation back
+through the Weather.com API and how to aggregate five nearby PWS stations.
+
 Contribution instructions are in [CONTRIBUTING.md](CONTRIBUTING.md).
 Repository automation instructions are in [AGENTS.md](AGENTS.md).
 
@@ -178,6 +181,7 @@ docker compose config
 ├── config.example.yaml
 ├── docs/cs/PROJECT.md
 ├── docs/en/PROJECT.md
+├── examples/home-assistant/
 ├── src/wu_uploader/
 ├── tests/
 ├── .python-version
